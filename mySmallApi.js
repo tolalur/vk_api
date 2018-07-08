@@ -1,9 +1,11 @@
 const mySmallApi = {
-    queryConstructor(method, query=null, fields, city=null, age_from, age_to, access_token) {
+    queryConstructor({method, query=null, fields, status=null, count=null, city=null, age_from, age_to, access_token}) {
         query = query !== null ? 'q=' + encodeURIComponent(query.trim()) : '';
         return `https://api.vk.com/method/${method}?
         ${query}
         &fields=${fields}
+        ${status ? '&status='+status:''}
+        &count=${count}
         &city=${city}
         &sex=1
         &age_from=${age_from}
@@ -20,7 +22,7 @@ const mySmallApi = {
         ...err
         });
     },
-    makeApiCall(str, request, insertUser) {
+    makeApiCall(str, request, parseUsers, insertUser) {
         console.log(str);
         request(str, (error, response, body) => {
             if (error) console.log('error:', error);
@@ -35,13 +37,13 @@ const mySmallApi = {
     insertUser(users, mongoClient, dbUrl, dbError) {
         mongoClient.connect(dbUrl, function (err, client) {
 
-            if (err) { return dbError(client, insertErr, response); }
+            if (err) { return dbError(client, err, response); }
 
             const db = client.db("usersdb");
             const collection = db.collection("users");
 
-            collection.insertMany(users, function (insertErr, results) {
-                if (err) {
+            collection.insertMany(users, function (insertErr) {
+                if (insertErr) {
                     return dbError(client, insertErr,
                         'Ошибка добавления пользователей в базу',
                         response);
@@ -54,7 +56,7 @@ const mySmallApi = {
                 {},
                 { $set: { review: 0 } },
                 { upsert: false },
-                function (err) {
+                function (updateErr) {
                     if (updateErr) {
                         return dbError(client, updateErr,
                             'Ошибка подключения к базе. добавление поля "review"',

@@ -14,7 +14,8 @@ const firstSearch = {
   method: 'users.search',
   query: 'Маша',
   fields: ['photo_200_orig', 'home_town', 'city', 'country', 'has_photo'],
-  has_photo: 1,
+  status:8,
+  count: 1000,
   city: 2,
   age_from: 20,
   age_to: 20,
@@ -30,7 +31,7 @@ const insertUser = (users) => {
     if (err) { return mySmallApi.dbError(client, insertErr, response); }
 
     const db = client.db("usersdb");
-    const collection = db.collection("users");
+    const collection = db.collection("usersOutstatus");
 
     collection.insertMany(users, function (insertErr, results) {
       if (err) {
@@ -46,7 +47,7 @@ const insertUser = (users) => {
       {},
       { $set: { review: 0 } },
       { upsert: false },
-      function (err) {
+      function (updateErr) {
         if (updateErr) {
           return mySmallApi.dbError(client, updateErr,
             'Ошибка подключения к базе. добавление поля "review"',
@@ -62,7 +63,10 @@ const insertUser = (users) => {
 const parseUsers = (res) => {
   let data = JSON.parse(res);
 
-  console.log('api response', data.response);
+  console.log('api response', 'count: ', 
+    data.response.count, 
+    ' in arr: ', data.response.items.length);
+  
   return data.response.items;
 }
 
