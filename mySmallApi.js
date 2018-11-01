@@ -22,13 +22,13 @@ const mySmallApi = {
         ...err
         });
     },
-    makeApiCall(str, request, parseUsers, insertUser) {
+    makeApiCall(str, request, parseUsers) {
         console.log(str);
         request(str, (error, response, body) => {
             if (error) console.log('error:', error);
 
             if (response && response.statusCode == 200) {
-                insertUser(parseUsers(body));
+                return (parseUsers(body));
             } else {
                 console.log('statusCode:', response && response.statusCode);
             }

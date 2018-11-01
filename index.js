@@ -1,6 +1,3 @@
-const access_token = '6d36f1140b43af65e689d3894dca9cf04c28cf436a02ef40acbe49b9bc21296f9406c4230908f0bccda09';
-const requestAPI = require('request');
-const mySmallApi = require('./mySmallApi');
 // подключение к базе
 const mongoClient = require("mongodb").MongoClient;
 const url = "mongodb://localhost:27017/";
@@ -9,20 +6,6 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
-
-const firstSearch = {
-  method: 'users.search',
-  query: 'Маша',
-  fields: ['photo_200_orig', 'home_town', 'city', 'country', 'has_photo'],
-  status:8,
-  count: 1000,
-  city: 2,
-  age_from: 20,
-  age_to: 20,
-  access_token: access_token
-};
-
-firstReq = mySmallApi.queryConstructor(firstSearch);
 
 
 const insertUser = (users) => {
@@ -60,15 +43,7 @@ const insertUser = (users) => {
   });
 }
 
-const parseUsers = (res) => {
-  let data = JSON.parse(res);
 
-  console.log('api response', 'count: ', 
-    data.response.count, 
-    ' in arr: ', data.response.items.length);
-  
-  return data.response.items;
-}
 
 const makeApiCall = (str, request) => {
   console.log(str);
